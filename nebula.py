@@ -1,4 +1,4 @@
-import ast
+﻿import ast
 from datetime import datetime
 import json
 import operator
@@ -9,7 +9,7 @@ OLLAMA_CHAT_URL = f"{OLLAMA_BASE_URL}/api/chat"
 OLLAMA_TAGS_URL = f"{OLLAMA_BASE_URL}/api/tags"
 LOG_FILE = "chat_history.log"
 
-MODEL_NAME = "qwen2.5:1.5b"
+MODEL_NAME = "qwen2.5:3b"
 SYSTEM_INSTRUCTION = (
     "You are Nebula AI, an intelligent, structured, and reliable assistant. "
     "Keep answers clear and accurate."
@@ -82,13 +82,23 @@ def stream_ollama(messages: list[dict], model_name: str) -> str:
     return "".join(chunks)
 
 
+def print_help() -> None:
+    print("\nAvailable commands:")
+    print("  /models         - List installed Ollama models")
+    print("  /model <name>   - Switch active model")
+    print("  /clear          - Clear conversation history")
+    print("  /help           - Show this command menu")
+    print("  calc <expr>     - Evaluate a math expression")
+    print("  exit            - Quit Nebula AI\n")
+
+
 def run_nebula() -> None:
     current_model = MODEL_NAME
     messages = [{"role": "system", "content": SYSTEM_INSTRUCTION}]
     append_log(f"--- Session started (model={current_model}) ---")
     print(
         f"Nebula AI ({current_model} via Ollama) is online. "
-        "Commands: calc <expr>, /models, /model <name>, /clear, exit\n"
+        "Commands: calc <expr>, /models, /model <name>, /clear, /help, exit\n"
     )
 
     while True:
@@ -108,6 +118,10 @@ def run_nebula() -> None:
             append_log("--- Session ended ---")
             print("Nebula AI: Goodbye!")
             break
+
+        if cmd == "/help":
+            print_help()
+            continue
 
         if cmd == "/clear":
             messages = [{"role": "system", "content": SYSTEM_INSTRUCTION}]
